@@ -24,12 +24,12 @@ public class BookController {
     @PostMapping
     public ResponseEntity<ResponseData> createBook(@Valid @RequestBody CreateBookRequest request) {
         ResponseData res = _bookService.createBook(request);
-        return new ResponseEntity<>(res, res.getStatus());
+        return new ResponseEntity<>(res, res.getStatusCode());
     }
 
     @GetMapping
     public ResponseEntity<ResponseData> getBooks(@RequestParam(required = false) String author) {
         ResponseData res = _bookService.getBooksByAuthorName(author);
-        return new ResponseEntity<>(res, res.getStatus());
+        return new ResponseEntity<>(res, res.getStatusCode());
     }
 }

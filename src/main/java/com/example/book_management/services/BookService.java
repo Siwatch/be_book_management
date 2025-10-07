@@ -16,9 +16,11 @@ import com.example.book_management.repositories.book.BookRepository;
 import com.example.book_management.util.helper.DateHelper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookService {
     private final BookRepository _bookRepository;
 
@@ -31,7 +33,7 @@ public class BookService {
             publishedDate = DateHelper.parseBEToCE(request.getPublishedDate());
 
             // ตรวจสอบปี
-            DateHelper.validateYear(publishedDate, 1543, LocalDate.now().getYear());
+            DateHelper.validateYear(publishedDate, 1000, LocalDate.now().getYear());
 
         } catch (DateTimeException | IllegalArgumentException e) {
             throw new BusinessException(HttpStatus.BAD_REQUEST,
