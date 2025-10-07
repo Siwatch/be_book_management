@@ -1,7 +1,7 @@
 # Getting Started
 
 # Book Management API
-โปรเจ็ค RESTfult API สำหรับบริหารจัดการหนังสือด้วย Spring Boot 3, Flyway และ ฐานข้อมูล MySQL
+โปรเจ็ค RESTful API สำหรับบริหารจัดการหนังสือด้วย Spring Boot 3, Flyway และ ฐานข้อมูล MySQL
 โปรเจกต์นี้ถูกพัฒนาขึ้นเพื่อสาธิตแนวทางการเขียนโค้ดให้สะอาดเข้าใจง่าย (Clean Code) การตรวจสอบข้อมูลก่อนบันทึก (Validation) รวมถึงการทดสอบแบบ Integration และการดีพลอยด้วย Docker
 
 (A simple RESTful API for managing books information using Spring Boot 3, Flyway, and MySQL.  
@@ -50,7 +50,11 @@ This project demonstrates clean code, input validation, integration testing, and
 
 ### วิธีการรัน Integration tests
 
-ใช้คำสั่ง 
+ก่อนรัน Integration Test ต้องมั่นใจว่า:
+* MySQL container กำลังทำงานอยู่ (ใช้คำสั่ง docker ps เพื่อตรวจสอบสถานะของ MySQL container)
+* Database `book` ถูกสร้างโดย Flyway เรียบร้อยแล้ว (จะต้องทำการรัน Spring Boot Application มาก่อนขั้นตอนนี้)
+
+ใช้คำสั่ง
 
     ./mvnw test
 
@@ -62,13 +66,19 @@ Spring Boot จะทำการรันไฟล์ เทสทั้งห�
 
 ### Example API requests and expected responses.
 
-| Method | Endpoint                 | Description             |
+| Method  | Endpoint                | Description             |
 |---------|-------------------------|-------------------------|
 | GET     | /books                  | Get all books           |
 | GET     | /books?author={author}  | Get books by author     |
 | POST    | /books                  | Create a new book       |
 
 #### API Endpoint
+
+API นี้ใช้สำหรับบริหารจัดการข้อมูลหนังสือ เช่น เพิ่มหนังสือใหม่ ดึงข้อมูลทั้งหมด หรือค้นหาตามผู้แต่ง  
+โดยทุก request จำเป็นต้องส่งวันที่ในรูปแบบ **พุทธศักราช (BE)** ซึ่งระบบจะทำการแปลงเป็น **คริสต์ศักราช (CE)** และตรวจสอบความถูกต้องให้อัตโนมัติ
+(This API allows clients to manage book information — including creating new books, retrieving all books, or searching by author.  
+All dates must be provided in the Buddhist calendar (BE), and validation will automatically handle leap years and convert to Common Era (CE) internally)
+
 1.) Get All Books
 
 Request
@@ -102,9 +112,7 @@ Expected Response
                 "title": "Spring boot API",
                 "author": "Jane Smith",
                 "publishedDate": "2566-01-31"
-            },
-
-
+            }
         ]
     }
 
@@ -180,7 +188,7 @@ If Request is Invalid
 
     POST /api/books
     {
-        
+        // empty body request 
     }
 
 Expected Response
@@ -201,6 +209,23 @@ Expected Response
                 ]   
     } 
 
+If `publishedDate` is invalid
+
+    POST /api/books
+    {
+        "title": "Spiderman and friends",
+        "author": "Peter Parker",
+        "publishedDate": "2569-02-28" // ปีมากกว่าปัจจุบัน (ปัจจุบันปี 2568)
+    }
+
+Expected Response 
+
+    {
+        "statusCode": "BAD_REQUEST",
+        "error": "BUSINESS_ERROR",
+        "message": "Published year (BE 2569 / CE 2026) must be between 1000 and 2025",
+        "fields": null
+    }
 
 
 
