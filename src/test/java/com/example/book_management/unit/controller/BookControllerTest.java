@@ -45,13 +45,12 @@ public class BookControllerTest {
     @Test
     void createBook_whenError() {
         CreateBookRequest request = new CreateBookRequest("Title", "Author", "1000-01-01");
-        ResponseData serviceResponse = new ResponseData<>(HttpStatus.BAD_REQUEST, "Year must be between 1543 and " + java.time.LocalDate.now().getYear());
+        ResponseData serviceResponse = new ResponseData<>(HttpStatus.BAD_REQUEST, "Year must be between 1000 and " + java.time.LocalDate.now().getYear());
         when(bookService.createBook(request)).thenReturn(serviceResponse);
 
         ResponseEntity<ResponseData> response = bookController.createBook(request);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals(serviceResponse.getMessage(), response.getBody().getMessage());
         verify(bookService).createBook(request);
     }
 

@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex) {
         ErrorResponse error = new ErrorResponse(
-                ex.getHttpStatus().value(),
+                ex.getHttpStatus(),
                 "BUSINESS_ERROR",
                 ex.getMessage());
         log.error("BusinessException: {}", ex.getMessage(), ex);
@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
         ErrorResponse error = new ErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR,
                 HttpStatus.INTERNAL_SERVER_ERROR.name(),
                 ex.getMessage());
         log.error("Unhandled exception: {}", ex.getMessage(), ex);
@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
 
         String message = "Missing or invalid required fields";
         ErrorResponse error = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST,
                 "VALIDATION_ERROR",
                 message,
                 fields);

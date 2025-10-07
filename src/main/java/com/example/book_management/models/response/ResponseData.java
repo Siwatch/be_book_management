@@ -10,22 +10,22 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ResponseData<T> {
-    private HttpStatusCode status;
+    private HttpStatusCode statusCode;
     private String message;
     private T data;
 
-    public ResponseData(HttpStatusCode status, String message) {
-        this.status = status;
+    public ResponseData(HttpStatusCode statusCode, String message) {
+        this.statusCode = statusCode;
         this.message = message;
     }
 
-    public ResponseData(HttpStatusCode status, T data) {
-        this.status = status;
+    public ResponseData(HttpStatusCode statusCode, T data) {
+        this.statusCode = statusCode;
         this.data = data;
     } 
 
-    public ResponseData(HttpStatusCode status,String message, T data) {
-        this.status = status;
+    public ResponseData(HttpStatusCode statusCode,String message, T data) {
+        this.statusCode = statusCode;
         this.message = message;
         this.data = data;
     } 
