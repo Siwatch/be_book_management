@@ -39,7 +39,7 @@ public class BookServiceTest {
 
         ResponseData response = bookService.createBook(request);
 
-        assertEquals(HttpStatus.OK, response.getStatus());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Create Book Success!!", response.getMessage());
 
         ArgumentCaptor<Book> captor = ArgumentCaptor.forClass(Book.class);
@@ -76,7 +76,7 @@ public class BookServiceTest {
 
         ResponseData<List<BookResponse>> response = bookService.getBooksByAuthorName(author);
 
-        assertEquals(HttpStatus.OK, response.getStatus());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         List<BookResponse> data = response.getData();
         assertEquals(1, data.size());
         assertEquals("Java Basics", data.get(0).getTitle());
@@ -95,11 +95,27 @@ public class BookServiceTest {
 
         ResponseData<List<BookResponse>> response = bookService.getBooksByAuthorName(null);
 
-        assertEquals(HttpStatus.OK, response.getStatus());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         List<BookResponse> data = response.getData();
         assertEquals(2, data.size());
         assertEquals("2563-05-20", data.get(0).getPublishedDate());
         assertEquals("2564-03-10", data.get(1).getPublishedDate());
+        verify(bookRepository, times(1)).findAll();
+    }
+
+    @Test
+    void getBooks_withBlankAuthor() {
+        List<Book> books = List.of(
+                Book.builder().id(1L).title("Java Basics").author("John Doe").publishedDate(LocalDate.of(2020, 5, 20)).build()
+        );
+        when(bookRepository.findAll()).thenReturn(books);
+
+        ResponseData<List<BookResponse>> response = bookService.getBooksByAuthorName("   ");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        List<BookResponse> data = response.getData();
+        assertEquals(1, data.size());
+        assertEquals("Java Basics", data.get(0).getTitle());
         verify(bookRepository, times(1)).findAll();
     }
 }

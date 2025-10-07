@@ -3,6 +3,7 @@ package com.example.book_management.util.helper;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import lombok.AllArgsConstructor;
 
@@ -13,15 +14,23 @@ public class DateHelper {
 
     public static LocalDate parseBEToCE(String beDate) {
         String[] parts = beDate.split("-");
-        if (parts.length != 3) {
+        
+        try {
+            // check format ว่าเป็น yyyy-MM-dd มั้ย
+            LocalDate.parse(beDate, yyyyMMddFormatter);
+        } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid date format. Expected yyyy-MM-dd");
         }
-    
-        int beYear = Integer.parseInt(parts[0]);
+        int year = Integer.parseInt(parts[0]);
         int month = Integer.parseInt(parts[1]);
         int day = Integer.parseInt(parts[2]);
-        int ceYear = beYear - 543;
-    
+        
+        if (year < 2400) {
+            throw new IllegalArgumentException("Expected Buddhist year (>= 2400), got: " + year);
+        }
+
+        int ceYear = year - 543;
+
         try {
             return LocalDate.of(ceYear, month, day);
         } catch (DateTimeException e) {
@@ -39,8 +48,10 @@ public class DateHelper {
 
     public static void validateYear(LocalDate ceDate, int minYear, int maxYear) {
         int year = ceDate.getYear();
+        int beYear = year + 543;
         if (year < minYear || year > maxYear) {
-            throw new IllegalArgumentException("Year must be between " + minYear + " and " + maxYear);
+            throw new IllegalArgumentException(String.format("Published year (BE %d / CE %d) must be between %d and %d",
+            beYear, year, minYear, maxYear));
         }
     }
 }
