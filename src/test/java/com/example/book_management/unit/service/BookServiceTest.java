@@ -72,7 +72,7 @@ public class BookServiceTest {
         List<Book> books = List.of(
                 Book.builder().id(1L).title("Java Basics").author(author).publishedDate(LocalDate.of(2020, 5, 20)).build()
         );
-        when(bookRepository.findByAuthor(author)).thenReturn(books);
+        when(bookRepository.findByAuthorStartingWithIgnoreCase(author)).thenReturn(books);
 
         ResponseData<List<BookResponse>> response = bookService.getBooksByAuthorName(author);
 
@@ -82,7 +82,7 @@ public class BookServiceTest {
         assertEquals("Java Basics", data.get(0).getTitle());
         assertEquals("John Doe", data.get(0).getAuthor());
         assertEquals("2563-05-20", data.get(0).getPublishedDate());
-        verify(bookRepository, times(1)).findByAuthor(author);
+        verify(bookRepository, times(1)).findByAuthorStartingWithIgnoreCase(author);
     }
 
     @Test

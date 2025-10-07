@@ -54,7 +54,7 @@ class BookControllerIntegrationTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Create Book Success!!"));
 
-        Book created = bookRepository.findByAuthor("John Doe").stream()
+        Book created = bookRepository.findByAuthorStartingWithIgnoreCase("John Doe").stream()
                 .filter(b -> "Java Basics 2".equals(b.getTitle()))
                 .findFirst()
                 .orElseThrow();
