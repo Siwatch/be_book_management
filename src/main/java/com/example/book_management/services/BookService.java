@@ -28,16 +28,13 @@ public class BookService {
 
         LocalDate publishedDate;
         try {
-            // แปลง string input เป็น LocalDate (แบบ CE Calent (eg. 2568-01-01 to
-            // 2025-01-01))
+            // แปลง string input เป็น LocalDate (แบบ CE Calent (eg. 2568-01-01 to 2025-01-01))
             publishedDate = DateHelper.parseBEToCE(request.getPublishedDate());
-
             // ตรวจสอบปี
             DateHelper.validateYear(publishedDate, 1000, LocalDate.now().getYear());
 
         } catch (DateTimeException | IllegalArgumentException e) {
-            throw new BusinessException(HttpStatus.BAD_REQUEST,
-                    e.getMessage());
+            throw new BusinessException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
 
         _bookRepository.save(Book.builder()
@@ -50,7 +47,7 @@ public class BookService {
     }
 
     public ResponseData<List<BookResponse>> getBooksByAuthorName(String author) {
-        List<Book> listOfBook = author != null && !author.isBlank() ? _bookRepository.findByAuthor(author)
+        List<Book> listOfBook = author != null && !author.isBlank() ? _bookRepository.findByAuthorStartingWithIgnoreCase(author)
                 : _bookRepository.findAll();
         return new ResponseData<List<BookResponse>>(HttpStatus.OK, listOfBook.stream().map(
                 book -> BookResponse.builder()

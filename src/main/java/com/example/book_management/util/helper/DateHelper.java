@@ -13,6 +13,8 @@ public class DateHelper {
     public static final DateTimeFormatter yyyyMMddFormatter = DateTimeFormatter.ofPattern(yyyy_MM_dd);
 
     public static LocalDate parseBEToCE(String beDate) {
+        if (beDate == null || beDate.isEmpty()) return LocalDate.now();
+
         String[] parts = beDate.split("-");
         
         try {
@@ -21,6 +23,7 @@ public class DateHelper {
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid date format. Expected yyyy-MM-dd");
         }
+
         int year = Integer.parseInt(parts[0]);
         int month = Integer.parseInt(parts[1]);
         int day = Integer.parseInt(parts[2]);
