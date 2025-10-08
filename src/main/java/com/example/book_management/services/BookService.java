@@ -6,6 +6,9 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import com.example.book_management.exceptions.BusinessException;
 import com.example.book_management.models.entity.Book;
@@ -46,16 +49,21 @@ public class BookService {
         return new ResponseData<>(HttpStatus.OK, "Create Book Success!!");
     }
 
-    public ResponseData<List<BookResponse>> getBooksByAuthorName(String author) {
-        List<Book> listOfBook = author != null && !author.isBlank() ? _bookRepository.findByAuthorStartingWithIgnoreCase(author)
-                : _bookRepository.findAll();
-        return new ResponseData<List<BookResponse>>(HttpStatus.OK, listOfBook.stream().map(
-                book -> BookResponse.builder()
+    public ResponseData<Page<BookResponse>> getBooksByAuthorName(String author, Pageable pageable) {
+        Page<Book> pageOfBooks = (author != null && !author.isBlank())
+                ? _bookRepository.findByAuthorStartingWithIgnoreCase(author, pageable)
+                : _bookRepository.findAll(pageable);
+
+        List<BookResponse> content = pageOfBooks.getContent().stream()
+                .map(book -> BookResponse.builder()
                         .id(book.getId())
                         .title(book.getTitle())
                         .author(book.getAuthor())
                         .publishedDate(DateHelper.formatCEToBE(book.getPublishedDate()))
                         .build())
-                .toList());
+                .toList();
+
+        Page<BookResponse> mapped = new PageImpl<>(content, pageable, pageOfBooks.getTotalElements());
+        return new ResponseData<Page<BookResponse>>(HttpStatus.OK, mapped);
     }
 }

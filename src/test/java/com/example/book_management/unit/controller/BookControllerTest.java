@@ -12,6 +12,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -57,39 +61,41 @@ public class BookControllerTest {
     @Test
     void getBooks_withAuthor() {
         String author = "John Doe";
-        List<BookResponse> data = List.of(
+        List<BookResponse> content = List.of(
                 BookResponse.builder().id(1L).title("Java Basics").author("John Doe").publishedDate("2563-05-20").build()
         );
-        ResponseData<List<BookResponse>> serviceResponse = new ResponseData<>(HttpStatus.OK, data);
-        when(bookService.getBooksByAuthorName(author)).thenReturn(serviceResponse);
+        Pageable pageable = PageRequest.of(0, 20);
+        Page<BookResponse> page = new PageImpl<>(content, pageable, content.size());
+        ResponseData<Page<BookResponse>> serviceResponse = new ResponseData<>(HttpStatus.OK, page);
+        when(bookService.getBooksByAuthorName(author, pageable)).thenReturn(serviceResponse);
 
-        ResponseEntity<ResponseData> response = bookController.getBooks(author);
+        ResponseEntity<ResponseData> response = bookController.getBooks(author, pageable, 20);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        
         @SuppressWarnings("unchecked")
-        List<BookResponse> responseData = (List<BookResponse>) response.getBody().getData();
-        assertEquals(1, responseData.size());
-        assertEquals("John Doe", responseData.get(0).getAuthor());
-        verify(bookService, times(1)).getBooksByAuthorName(author);
+        Page<BookResponse> responsePage = (Page<BookResponse>) response.getBody().getData();
+        assertEquals(1, responsePage.getTotalElements());
+        assertEquals("John Doe", responsePage.getContent().get(0).getAuthor());
+        verify(bookService, times(1)).getBooksByAuthorName(author, pageable);
     }
 
     @Test
     void getBooks_withoutAuthor() {
-        List<BookResponse> data = List.of(
+        List<BookResponse> content = List.of(
                 BookResponse.builder().id(1L).title("Java Basics").author("John Doe").publishedDate("2563-05-20").build(),
                 BookResponse.builder().id(2L).title("Spring Boot API").author("Jane Smith").publishedDate("2564-03-10").build()
         );
-        ResponseData<List<BookResponse>> serviceResponse = new ResponseData<>(HttpStatus.OK, data);
-        when(bookService.getBooksByAuthorName(null)).thenReturn(serviceResponse);
+        Pageable pageable = PageRequest.of(0, 20);
+        Page<BookResponse> page = new PageImpl<>(content, pageable, content.size());
+        ResponseData<Page<BookResponse>> serviceResponse = new ResponseData<>(HttpStatus.OK, page);
+        when(bookService.getBooksByAuthorName(null, pageable)).thenReturn(serviceResponse);
 
-        ResponseEntity<ResponseData> response = bookController.getBooks(null);
+        ResponseEntity<ResponseData> response = bookController.getBooks(null, pageable, 20);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-
         @SuppressWarnings("unchecked")
-        List<BookResponse> responseData = (List<BookResponse>) response.getBody().getData();
-        assertEquals(2, responseData.size());
-        verify(bookService, times(1)).getBooksByAuthorName(null);
+        Page<BookResponse> responsePage = (Page<BookResponse>) response.getBody().getData();
+        assertEquals(2, responsePage.getTotalElements());
+        verify(bookService, times(1)).getBooksByAuthorName(null, pageable);
     }
 }

@@ -66,17 +66,24 @@ class BookControllerIntegrationTest {
     void testGetBooksByAuthor() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/books")
                 .param("author", "John Doe")
+                .param("page", "0")
+                .param("size", "20")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].author").value("John Doe"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].title").value("Java Basics"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.content[0].author").value("John Doe"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.content[0].title").value("Java Basics"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.size").value(20))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.number").value(0));
     }
 
     @Test
     void testGetBooksWithoutAuthor() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/books")
+                .param("page", "0")
+                .param("size", "10")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.length()").value(2));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.content.length()").value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.totalElements").value(2));
     }
 }
