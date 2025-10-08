@@ -58,10 +58,10 @@ This project demonstrates clean code, input validation, integration testing, and
 
     ./mvnw test
 
-Spring Boot จะทำการรันไฟล์ เทสทั้งหมดที่อยู่ใน โฟลเดอร์ /src/test โดยจะมีเคสทั้งหมด 14 test cases
+Spring Boot จะทำการรันไฟล์ เทสทั้งหมดที่อยู่ใน โฟลเดอร์ /src/test โดยจะมีเคสทั้งหมด 21 test cases
 
-* 1 case - BookManagementApplicationTests
-* 3 case - Integration Test (Note ในขณะรัน integration test จำเป็นต้องให้ MySQL รันอยู่ตลอดเวลา)
+* 1 case  - BookManagementApplicationTests
+* 10 case - Integration Test (Note ในขณะรัน integration test จำเป็นต้องให้ MySQL รันอยู่ตลอดเวลา)
 * 10 case - Unit Test
 
 ### Example API requests and expected responses.
