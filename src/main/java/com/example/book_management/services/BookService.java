@@ -47,7 +47,7 @@ public class BookService {
     }
 
     public ResponseData<List<BookResponse>> getBooksByAuthorName(String author) {
-        List<Book> listOfBook = author != null && !author.isBlank() ? _bookRepository.findByAuthorStartingWithIgnoreCase(author)
+        List<Book> listOfBook = author != null && !author.isBlank() ? _bookRepository.findByAuthorIgnoreCase(author.trim())
                 : _bookRepository.findAll();
         return new ResponseData<List<BookResponse>>(HttpStatus.OK, listOfBook.stream().map(
                 book -> BookResponse.builder()
