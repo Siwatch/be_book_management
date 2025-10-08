@@ -54,7 +54,7 @@ class BookControllerIntegrationTest {
                                 .andExpect(MockMvcResultMatchers.status().isOk())
                                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Create Book Success!!"));
 
-                Book created = bookRepository.findByAuthorStartingWithIgnoreCase("John Doe").stream()
+                Book created = bookRepository.findByAuthorIgnoreCase("John Doe").stream()
                                 .filter(b -> "Java Basics 2".equals(b.getTitle()))
                                 .findFirst()
                                 .orElseThrow();
@@ -155,11 +155,12 @@ class BookControllerIntegrationTest {
                                   "publishedDate": "2569-01-01" 
                                 }
                                 """;
+                int currentYear = LocalDate.now().getYear();
                 mockMvc.perform(MockMvcRequestBuilders.post("/books")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBody))
                                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Published year (BE 2569 / CE 2026) must be between 1000 and 2025"));
+                                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Published year (BE 2569 / CE 2026) must be between 1000 and " + currentYear));
         }
 
         @Test
