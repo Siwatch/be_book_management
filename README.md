@@ -186,7 +186,7 @@ Error Example
 
 If Request is Invalid 
 
-    POST /api/books
+    POST /books
     {
         // empty body request 
     }
@@ -209,9 +209,9 @@ Expected Response
                 ]   
     } 
 
-If `publishedDate` is invalid
+If `publishedDate` is invalid year
 
-    POST /api/books
+    POST /books
     {
         "title": "Spiderman and friends",
         "author": "Peter Parker",
@@ -227,6 +227,57 @@ Expected Response
         "fields": null
     }
 
+If `publishedDate` is invalid format
 
+    POST /books
+    {
+        "title": "Spiderman and friends",
+        "author": "Peter Parker",
+        "publishedDate": "28-01-2568" // format date ที่รับจะต้องเป็น (yyyy-MM-dd)
+    }
 
+Expected Response 
+
+    {
+        "statusCode": "BAD_REQUEST",
+        "error": "BUSINESS_ERROR",
+        "message": "Invalid date format. Expected yyyy-MM-dd",
+        "fields": null
+    }
+
+If `publishedDate` is invalid year (ไม่ได้ส่งมาเป็นปี พ.ศ.) 
+
+    POST /books
+    {
+        "title": "Spiderman and friends",
+        "author": "Peter Parker",
+        "publishedDate": "2025-02-28" // ส่ง request เป็นปี ค.ศ.
+    }
+
+Expected Response 
+
+    {
+        "statusCode": "BAD_REQUEST",
+        "error": "BUSINESS_ERROR",
+        "message": "Expected Buddhist year (>= 2400), got: 2025",
+        "fields": null
+    }
+
+If `publishedDate` is invalid date (ส่งวันที่ที่ไม่มีอยู่จริงของเดือนนั้นหรือปีนั้น) 
+
+    POST /books
+    {
+        "title": "Spiderman and friends",
+        "author": "Peter Parker",
+        "publishedDate": "2568-01-32" // ส่งวันที่ที่ไม่มีอยู่จริงของเดือนนั้นหรือปีนั้น
+    }
+
+Expected Response 
+
+    {
+        "statusCode": "BAD_REQUEST",
+        "error": "BUSINESS_ERROR",
+        "message": "Invalid date (day/month) for given year",
+        "fields": null
+    }
 
