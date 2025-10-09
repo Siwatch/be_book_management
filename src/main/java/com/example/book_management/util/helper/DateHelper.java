@@ -3,7 +3,6 @@ package com.example.book_management.util.helper;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 import lombok.AllArgsConstructor;
 
@@ -13,16 +12,16 @@ public class DateHelper {
     public static final DateTimeFormatter yyyyMMddFormatter = DateTimeFormatter.ofPattern(yyyy_MM_dd);
 
     public static LocalDate parseBEToCE(String beDate) {
+        // กรณีไม่ส่งค่า published date จะทำการบันทึกวันที่ปัจจุบัน
         if (beDate == null || beDate.isEmpty()) return LocalDate.now();
 
-        String[] parts = beDate.split("-");
-        
-        try {
-            // check format ว่าเป็น yyyy-MM-dd มั้ย
-            LocalDate.parse(beDate, yyyyMMddFormatter);
-        } catch (DateTimeParseException e) {
+        // ตรวจสอบว่า format ตรงกับ yyyy-MM-dd
+        String regex = "^\\d{4}-\\d{2}-\\d{2}$";
+        if (!beDate.matches(regex)) {
             throw new IllegalArgumentException("Invalid date format. Expected yyyy-MM-dd");
         }
+
+        String[] parts = beDate.split("-");
 
         int year = Integer.parseInt(parts[0]);
         int month = Integer.parseInt(parts[1]);
